@@ -1,0 +1,79 @@
+﻿@model CrudApp.Models.Question
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Question</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form id="createForm">
+            <div class="form-group">
+                <label for="UserQuestion">User Question</label>
+                <input type="text" id="UserQuestion" class="form-control" />
+                <span id="userQuestionError" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="UserAnswer">User Answer</label>
+                <input type="text" id="UserAnswer" class="form-control" />
+                <span id="userAnswerError" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-primary" onclick="createQuestion()">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a href="/Question">Back to List</a>
+</div>
+
+<script>
+    function validateForm() {
+        let isValid = true;
+        const userQuestion = document.getElementById('UserQuestion').value;
+        const userAnswer = document.getElementById('UserAnswer').value;
+
+       
+
+        if (!userQuestion) {
+            document.getElementById('userQuestionError').innerText = 'User Question is required.';
+            isValid = false;
+        }
+        if (!userAnswer) {
+            document.getElementById('userAnswerError').innerText = 'User Answer is required.';
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    async function createQuestion() {
+        if (!validateForm()) {
+            return;
+        }
+
+        const question = {
+            UserQuestion: document.getElementById('UserQuestion').value,
+            UserAnswer: document.getElementById('UserAnswer').value
+        };
+
+        const response = await fetch('/api/questions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(question)
+        });
+
+        if (response.ok) {
+            alert('Question created successfully!');
+            window.location.href = '/Question';
+        } else {
+            alert('Failed to create question.');
+        }
+    }
+</script>

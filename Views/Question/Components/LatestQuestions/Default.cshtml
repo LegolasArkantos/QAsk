@@ -1,0 +1,15 @@
+﻿@model IEnumerable<CrudApp.Models.Question>
+
+<div class="latest-questions">
+    <h2>Latest Questions</h2>
+    <ul>
+        @foreach (var question in Model)
+
+        {
+            <li>
+                <strong>Question:</strong> @question.UserQuestion <br />
+                <strong>Answer:</strong> @question.UserAnswer
+            </li>
+        }
+    </ul>
+</div>

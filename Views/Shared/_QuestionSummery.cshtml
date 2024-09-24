@@ -1,0 +1,21 @@
+﻿@model IEnumerable<CrudApp.Models.Question>
+
+<h3>All Questions</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Question</th>
+            <th>Answer</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var question in Model)
+        {
+            <tr>
+                <td>@question.UserQuestion</td>
+                <td>@question.UserAnswer</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,56 @@
+﻿@model IEnumerable<CrudApp.Models.Question>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Questions</h1>
+
+<p>
+    <a href="/Question/Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Question
+            </th>
+            
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="questionTableBody">
+    </tbody>
+</table>
+
+<script>
+    async function loadQuestions() {
+        const response = await fetch('/api/questions');
+        if (response.ok) {
+            const data = await response.json();
+            console.log(data);
+            const tableBody = document.getElementById('questionTableBody');
+            tableBody.innerHTML = '';  // Clear existing data
+
+            data.forEach(question => {
+                console.log(question.id)
+                tableBody.innerHTML += `
+                
+            <tr>
+                <td>${question.userQuestion}</td>  
+                <td>
+                <a href="/Question/Edit?id=${question.id}&userQuestion=${encodeURIComponent(question.userQuestion)}&userAnswer=${encodeURIComponent(question.userAnswer)}">Edit</a> |
+                    <a href="/Question/Details?id=${question.id}&userQuestion=${encodeURIComponent(question.userQuestion)}&userAnswer=${encodeURIComponent(question.userAnswer)}">Details</a> |
+                    <a href="/Question/Delete?id=${question.id}&userQuestion=${encodeURIComponent(question.userQuestion)}&userAnswer=${encodeURIComponent(question.userAnswer)}">Delete</a> |
+                </td>
+            </tr>
+        `;
+            });
+        } else {
+            alert('Failed to load questions.');
+        }
+    }
+
+    // Load questions on page load
+    loadQuestions();
+</script>

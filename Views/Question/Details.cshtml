@@ -1,0 +1,39 @@
+﻿@model CrudApp.Models.Question
+
+<h1>Details</h1>
+
+<div>
+    
+    <p>Answer: @Model.UserAnswer</p>
+    @await Component.InvokeAsync("LatestQuestions", new { numberOfQuestions = 2 })
+</div>
+
+<div id="allQuestionsPartial">
+    @await Html.PartialAsync("_QuestionSummery", new List<CrudApp.Models.Question>()) 
+</div>
+
+<script>
+    async function loadAllQuestions() {
+        const response = await fetch('/api/questions');
+        if (response.ok) {
+            const questions = await response.json();
+
+            const partialContainer = document.getElementById('allQuestionsPartial');
+            partialContainer.innerHTML = '';
+
+            questions.forEach(q => {
+                partialContainer.innerHTML += `
+                        <div>
+                            <strong>Question:</strong> ${q.userQuestion}<br>
+                            <strong>Answer:</strong> ${q.userAnswer}<br><br>
+                        </div>
+                    `;
+            });
+        } else {
+            alert('Error loading questions.');
+        }
+    }
+
+    // Load questions after page loads
+    window.onload = loadAllQuestions;
+</script>

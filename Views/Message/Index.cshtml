@@ -1,0 +1,104 @@
+﻿@model IEnumerable<CrudApp.Models.Message>
+
+<h1>Messaging Forum</h1>
+
+<div id="messagesContainer" style="height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+    <div id="messagesList">
+        <!-- Messages will be displayed here -->
+    </div>
+</div>
+
+<div>
+    <form id="messageForm" style="display: flex; flex-direction: column;">
+        <textarea id="messageContent" rows="4" cols="50" placeholder="Type your message here..." style="resize: none;"></textarea>
+        <button type="button" onclick="sendMessage()" style="margin-top: 10px; ">Send</button>
+    </form>
+</div>
+
+<script>
+    // Random name combinations
+    const verbs = ["Curious", "Mighty", "Brave", "Silent", "Fierce", "Loyal", "Sly", "Dangerous"];
+    const animals = ["Badger", "Fox", "Bear", "Eagle", "Wolf", "Lion", "Panther", "Hawk"];
+
+    // Function to generate random name
+    function getRandomUsername() {
+        const randomVerb = verbs[Math.floor(Math.random() * verbs.length)];
+        const randomAnimal = animals[Math.floor(Math.random() * animals.length)];
+        return `${randomVerb} ${randomAnimal}`;
+    }
+
+
+    // function to decide to get from localstorage or creat new
+    function getOrCreateUsername() {
+        const storedUsername = localStorage.getItem('randomUsername');
+        if (storedUsername) {
+            return storedUsername;
+        } else {
+            const randomUsername = getRandomUsername();
+            localStorage.setItem('randomUsername', randomUsername); // Storing the randomname to localstorage
+            return randomUsername;
+        }
+    }
+
+    // Assign a random name for the current user for this session
+    const randomUsername = getOrCreateUsername();
+
+    // Function to send message
+    async function sendMessage() {
+        const messageContent = document.getElementById('messageContent').value;
+
+        if (!messageContent) {
+            alert('Please enter a message.');
+            return;
+        }
+
+        //complete payload message
+        const message = {
+            Content: messageContent,
+            RandomName: randomUsername 
+        };
+
+        
+        const response = await fetch('/api/messages', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(message)
+        });
+
+        if (response.ok) {
+            document.getElementById('messageContent').value = ''; // Clear input
+            loadMessages(); // and reload messages
+        } else {
+            alert('Failed to send message.');
+        }
+    }
+
+    async function loadMessages() {
+        const response = await fetch('/api/messages');
+        if (response.ok) {
+            const messages = await response.json();
+            const messagesList = document.getElementById('messagesList');
+            messagesList.innerHTML = '';
+
+            messages.forEach(msg => {
+                // Format the CreatedAt timestamp
+                const createdAt = new Date(msg.createdAt).toLocaleTimeString();
+                // Adding each message to the list with the random name 
+                messagesList.innerHTML += `<div style="margin-bottom: 10px;"><strong>${msg.randomName}:</strong> ${msg.content} <em>(${createdAt})</em></div>`;
+            });
+
+            // Scroll to the bottom of the messages container
+            const messagesContainer = document.getElementById('messagesContainer');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        } else {
+            alert('Error loading messages.');
+        }
+    }
+
+    // Refresh the messages every 10 seconds without refreshing the whole page
+    setInterval(loadMessages, 10000); // 10 seconds 
+
+    window.onload = loadMessages;
+</script>
