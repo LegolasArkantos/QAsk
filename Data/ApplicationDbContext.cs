@@ -13,6 +13,9 @@ namespace CrudApp.Data
         public DbSet<CrudApp.Models.Question>? Question { get; set; }
         public DbSet<Message> Messages { get; set; }
 
+        public DbSet<FileQuestion> FileQuestions { get; set; }
+
+        public DbSet<Answer> Answers { get; set; }  
 
     }
 }

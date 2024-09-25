@@ -1,0 +1,52 @@
+﻿@model IEnumerable<CrudApp.Models.FileQuestion>
+
+<h1>Uploaded Questions</h1>
+
+<div>
+    <a href="@Url.Action("Create", "FileQuestion")" style="float:right; margin-bottom: 10px;">Add a Question</a>
+</div>
+
+<div id="questionsList">
+    @if (Model != null && Model.Any())
+    {
+        foreach (var question in Model)
+        {
+            <div>
+                <h3>@question.Heading</h3>
+                <p><a href="@question.FilePath" download>Download File</a></p>
+                <hr />
+            </div>
+        }
+    }
+    else
+    {
+        <p>No questions uploaded yet.</p>
+    }
+</div>
+
+<script>
+    async function loadQuestions() {
+        const response = await fetch('/api/FileQuestions');
+        if (response.ok) {
+            const questions = await response.json();
+            const questionsList = document.getElementById('questionsList');
+            questionsList.innerHTML = '';
+
+            questions.forEach(q => {
+                questionsList.innerHTML += `
+                        <div>
+                            <h3>${q.heading}</h3>
+                            <p><a href="${q.filePath}" download>Download File</a></p>
+                            
+                            <hr />
+                        </div>
+                    `;
+            });
+        } else {
+            alert('Error loading questions.');
+        }
+    }
+
+    // Load questions after page loads
+    window.onload = loadQuestions;
+</script>
