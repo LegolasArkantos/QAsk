@@ -9,7 +9,6 @@ using System.Collections.Generic;
 
 namespace CrudApp.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MessagesController : ControllerBase

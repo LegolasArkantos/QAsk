@@ -14,7 +14,6 @@ namespace CrudApp.Controllers
             _logger = logger;
         }
 
-        [Authorize]
         public IActionResult Create()
         {
             return View();

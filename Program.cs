@@ -39,6 +39,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseMiddleware<CustomAuthenticationMiddleware>(); // Add this line after UseRouting
 
 app.UseAuthentication();
 app.UseAuthorization();
