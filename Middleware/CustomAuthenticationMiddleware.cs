@@ -1,35 +1,72 @@
-﻿// Middleware/CustomAuthenticationMiddleware.cs
-using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
-public class CustomAuthenticationMiddleware
+public class CustomJWTMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly IConfiguration _configuration;
 
-    public CustomAuthenticationMiddleware(RequestDelegate next)
+    public CustomJWTMiddleware(RequestDelegate next, IConfiguration configuration)
     {
         _next = next;
+        _configuration = configuration;
     }
 
-    public async Task InvokeAsync(HttpContext context)
+    public async Task Invoke(HttpContext context)
     {
-        if (context.Request.Cookies.TryGetValue("AuthCookie", out var authCookie))
+        var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+
+        
+        Console.WriteLine("Token extracted from Authorization header: " + token);
+
+        if (token != null)
         {
-            // Your logic to validate the cookie and set the user
-            var user = await ValidateUser(authCookie);
-            if (user != null)
-            {
-                context.User = user; // Set the user on the context
-            }
+            AttachUserToContext(context, token);
+        }
+        else
+        {
+            Console.WriteLine("No token found in the request.");
         }
 
-        await _next(context); // Call the next middleware
+        await _next(context);
     }
 
-    private Task<ClaimsPrincipal> ValidateUser(string authCookie)
+    private void AttachUserToContext(HttpContext context, string token)
     {
-        // Your user validation logic goes here (fetch user from DB, etc.)
-        return Task.FromResult<ClaimsPrincipal>(null);
+        try
+        {
+            
+            var key = Encoding.ASCII.GetBytes("your_secret_key_here");
+            Console.WriteLine("Secret key loaded for validation.");
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero 
+            };
+
+            Console.WriteLine("Validating token...");
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken validatedToken);
+
+            
+            Console.WriteLine("Token is valid. Attaching claims to HttpContext.");
+            context.User = principal;
+        }
+        catch (SecurityTokenException ex)
+        {
+            Console.WriteLine($"Token validation failed: {ex.Message}");
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Unexpected error occurred during token validation: {ex.Message}");
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        }
     }
 }

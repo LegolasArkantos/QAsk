@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
 using CrudApp.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace CrudApp.Controllers
 {
@@ -70,11 +74,31 @@ namespace CrudApp.Controllers
                 return Unauthorized("Invalid credentials.");
             }
 
-            // Here you can set up a session or return a token (JWT) for authentication
-            return Ok("Login successful.");
+            var token = GenerateJwtToken(user.Email);
+            return Ok(new { Token = token });
         }
 
-        
+        private string GenerateJwtToken(string email)
+        {
+            var claims = new[]
+            {
+        new Claim("email", email),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+    };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_secret_key_here")); 
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: null,
+                audience: null,
+                claims: claims,
+                expires: DateTime.Now.AddHours(1),
+                signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
 
 
     }

@@ -16,6 +16,9 @@
     <button type="button" onclick="submitQuestion()">Submit</button>
 </form>
 
+<script src="/js/ApiHelper.js"></script>
+
+
 <script>
     async function submitQuestion() {
         const title = document.getElementById('title').value;
@@ -43,4 +46,12 @@
             alert('Failed to create question.');
         }
     }
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = "/CustomUser/Login";
+        }
+    });
 </script>
