@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace CrudApp.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MessagesController : ControllerBase
@@ -25,6 +25,13 @@ namespace CrudApp.Controllers
         [HttpPost]
         public async Task<IActionResult> PostMessage([FromBody] Message message)
         {
+            var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+
+            if (email == null)
+            {
+                return Unauthorized();
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -41,6 +48,12 @@ namespace CrudApp.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Message>>> GetMessages()
         {
+            var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+
+            if (email == null)
+            {
+                return Unauthorized();  
+            }
             var message = await _unitOfWork.MessageRepository.GetAllAsync();
 
             return Ok(message);

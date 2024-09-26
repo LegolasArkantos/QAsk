@@ -1,0 +1,40 @@
+﻿@model CrudApp.Models.ViewModels.LoginViewModel
+
+<h1>Login</h1>
+
+<form id="loginForm">
+    <div>
+        <label>Email:</label>
+        <input type="email" asp-for="Email" required />
+    </div>
+    <div>
+        <label>Password:</label>
+        <input type="password" asp-for="Password" required />
+    </div>
+    <button type="button" onclick="loginUser()">Login</button>
+</form>
+
+<script>
+    async function loginUser() {
+        const formData = {
+            Email: document.querySelector('input[name="Email"]').value,
+            Password: document.querySelector('input[name="Password"]').value
+        };
+
+        const response = await fetch('/api/CustomUsers/Login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('token', data.token);
+            alert('Login successful!');
+            window.location.href = '/'; 
+        } else {
+            const errorText = await response.text();
+            alert(`Error: ${errorText}`);
+        }
+    }
+</script>

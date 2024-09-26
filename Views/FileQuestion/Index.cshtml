@@ -24,9 +24,11 @@
     }
 </div>
 
+<script src="/js/ApiHelper.js"></script>
+
 <script>
     async function loadQuestions() {
-        const response = await fetch('/api/FileQuestions');
+        const response = await fetchWithToken('/api/FileQuestions');
         if (response.ok) {
             const questions = await response.json();
             const questionsList = document.getElementById('questionsList');
@@ -46,6 +48,13 @@
             alert('Error loading questions.');
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = "/CustomUser/Login";
+        }
+    });
 
     // Load questions after page loads
     window.onload = loadQuestions;

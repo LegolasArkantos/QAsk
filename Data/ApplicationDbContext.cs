@@ -15,6 +15,8 @@ namespace CrudApp.Data
 
         public DbSet<FileQuestion> FileQuestions { get; set; }
 
+        public DbSet<CustomUser> CustomUsers { get; set; }
+
         public DbSet<Answer> Answers { get; set; }  
 
     }

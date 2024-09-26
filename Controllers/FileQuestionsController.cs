@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using CrudApp.Data;
+using System.Security.Claims;
 
 namespace CrudApp.Controllers
 {
@@ -30,6 +31,13 @@ namespace CrudApp.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FileQuestion>>> GetFileQuestions()
         {
+            var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+
+            if (email == null)
+            {
+                return Unauthorized();
+            }
+
             return await _context.FileQuestions.ToListAsync();
         }
 
@@ -40,6 +48,8 @@ namespace CrudApp.Controllers
         [HttpPost]
         public async Task<IActionResult> PostFileQuestion([FromForm] IFormFile file, [FromForm] string title)
         {
+            
+
             if (file == null || string.IsNullOrEmpty(title))
             {
                 return BadRequest("Missing file or title.");

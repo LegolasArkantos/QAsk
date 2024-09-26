@@ -1,24 +1,31 @@
 ﻿using CrudApp.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace CrudApp.Controllers
 {
-    public class MessageController : Controller
+    public class CustomUserController : Controller
     {
-        private readonly ILogger<MessageController> _logger;
+        private readonly ILogger<CustomUserController> _logger;
 
-        public MessageController(ILogger<MessageController> logger)
+        public CustomUserController(ILogger<CustomUserController> logger)
         {
             _logger = logger;
         }
 
-        
-        public IActionResult Index()
+
+       
+        public IActionResult Register()
         {
             return View();
         }
+
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 
