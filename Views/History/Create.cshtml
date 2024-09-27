@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Create New Event";
+}
+
+<h2>Create New Historical Event</h2>
+
+<form id="createHistoryForm">
+    <div class="form-group">
+        <label for="EventName">Event Name</label>
+        <input type="text" class="form-control" id="EventName" required />
+    </div>
+    <div class="form-group">
+        <label for="Year">Year</label>
+        <input type="number" class="form-control" id="Year" required />
+    </div>
+    <div class="form-group">
+        <label for="Country">Country</label>
+        <input type="text" class="form-control" id="Country" required />
+    </div>
+    <div class="form-group">
+        <label for="Continent">Continent</label>
+        <input type="text" class="form-control" id="Continent" required />
+    </div>
+    <button type="button" class="btn btn-primary" onclick="createHistoryEvent()">Submit</button>
+</form>
+
+<a href="@Url.Action("Index", "Historys")" class="btn btn-secondary">Back to History List</a>
+
+<script>
+    // Function to send a POST request to create a new historical event
+    async function createHistoryEvent() {
+        const eventName = document.getElementById('EventName').value;
+        const year = document.getElementById('Year').value;
+        const country = document.getElementById('Country').value;
+        const continent = document.getElementById('Continent').value;
+
+        const newHistory = {
+            EventName: eventName,
+            Year: parseInt(year),
+            Country: country,
+            Continent: continent
+        };
+
+        try {
+            const response = await fetch('/api/historys', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newHistory)
+            });
+
+            if (response.ok) {
+                alert('New historical event created successfully!');
+                window.location.href = '/History'; 
+            } else {
+                alert('Failed to create event.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+</script>

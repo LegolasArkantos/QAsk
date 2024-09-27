@@ -1,0 +1,95 @@
+﻿@model IEnumerable<CrudApp.Models.History>
+
+<h1>Event History</h1>
+
+<div class="container">
+    <div class="row">
+        <!-- Filter Sidebar -->
+        <div class="col-md-3">
+            <h3>Filter Events</h3>
+            <form id="filterForm">
+                <div class="form-group">
+                    <label for="eventName">Event Name</label>
+                    <input type="text" id="eventName" class="form-control" placeholder="Enter event name">
+                </div>
+
+                <div class="form-group">
+                    <label for="year">Year</label>
+                    <input type="number" id="year" class="form-control" placeholder="Enter year">
+                </div>
+
+                <div class="form-group">
+                    <label for="country">Country</label>
+                    <input type="text" id="country" class="form-control" placeholder="Enter country">
+                </div>
+
+                <div class="form-group">
+                    <label for="continent">Continent</label>
+                    <input type="text" id="continent" class="form-control" placeholder="Enter continent">
+                </div>
+
+                <button type="button" class="btn btn-primary" onclick="filterEvents()">Apply Filters</button>
+            </form>
+        </div>
+
+        <!-- Events List -->
+        <div class="col-md-9">
+            <h3>Events</h3>
+            <div id="eventsContainer">
+                <!-- Events will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/ApiHelper.js"></script> <!-- Include ApiHelper for token handling -->
+
+<script>
+    // Load all events on page load
+    window.onload = function () {
+        loadEvents();
+    };
+
+    // Function to load events dynamically with filters
+    async function loadEvents(filters = {}) {
+        const queryString = new URLSearchParams(filters).toString();
+        const response = await fetchWithToken(`/api/historys?${queryString}`);
+
+        if (response.ok) {
+            const events = await response.json();
+            const eventsContainer = document.getElementById('eventsContainer');
+            eventsContainer.innerHTML = '';
+
+            events.forEach(event => {
+                eventsContainer.innerHTML += `
+                        <div class="event">
+                            <h5>${event.eventName}</h5>
+                            <p><strong>Year:</strong> ${event.year}</p>
+                            <p><strong>Country:</strong> ${event.country}</p>
+                            <p><strong>Continent:</strong> ${event.continent}</p>
+                        </div>
+                        <hr>
+                    `;
+            });
+        } else {
+            alert('Failed to load events.');
+        }
+    }
+
+    // Function to apply filters
+    function filterEvents() {
+        const eventName = document.getElementById('eventName').value;
+        const year = document.getElementById('year').value;
+        const country = document.getElementById('country').value;
+        const continent = document.getElementById('continent').value;
+
+        const filters = {};
+
+        if (eventName) filters.eventName = eventName;
+        if (year) filters.year = year;
+        if (country) filters.country = country;
+        if (continent) filters.continent = continent;
+
+        loadEvents(filters);
+    }
+</script>

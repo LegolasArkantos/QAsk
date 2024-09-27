@@ -55,7 +55,7 @@ namespace CrudApp.Controllers
                 return BadRequest("Missing file or title.");
             }
 
-            // Save file to a local path (e.g., wwwroot/uploads/)
+            
             var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
 
             if (!Directory.Exists(uploadPath))
@@ -73,7 +73,7 @@ namespace CrudApp.Controllers
             var fileQuestion = new FileQuestion
             {
                 Heading = title,
-                FilePath = $"/uploads/{file.FileName}" // Store the relative path
+                FilePath = $"/uploads/{file.FileName}" 
             };
 
             _context.FileQuestions.Add(fileQuestion);
