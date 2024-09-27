@@ -19,5 +19,7 @@ namespace CrudApp.Data
 
         public DbSet<Answer> Answers { get; set; }  
 
+        public DbSet<History> histories { get; set; }
+
     }
 }

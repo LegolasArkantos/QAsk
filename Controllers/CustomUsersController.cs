@@ -93,7 +93,7 @@ namespace CrudApp.Controllers
                 issuer: null,
                 audience: null,
                 claims: claims,
-                expires: DateTime.Now.AddHours(1),
+                expires: DateTime.Now.AddSeconds(20),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

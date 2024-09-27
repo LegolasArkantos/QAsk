@@ -63,7 +63,7 @@ namespace CrudApp.Controllers
                 return BadRequest();
             }
 
-            _unitOfWork.QuestionRepository.UpdateAsync(question);
+            await _unitOfWork.QuestionRepository.UpdateAsync(question);
             try
             {
                 await _unitOfWork.SaveAsync();

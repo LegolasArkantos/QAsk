@@ -27,11 +27,20 @@
             body: JSON.stringify(formData)
         });
 
+        const redirectUrl = localStorage.getItem('redirectAfterLogin');
+
         if (response.ok) {
             const data = await response.json();
             localStorage.setItem('token', data.token);
             alert('Login successful!');
-            window.location.href = '/'; 
+            if (redirectUrl) {
+                localStorage.removeItem('redirectAfterLogin'); 
+                window.location.href = redirectUrl;
+            } else {
+                
+                window.location.href = '/';
+            }
+            
         } else {
             const errorText = await response.text();
             alert(`Error: ${errorText}`);

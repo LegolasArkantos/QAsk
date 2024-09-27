@@ -3,6 +3,50 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Welcome </h1>
+    <p>Enter a prompt below to interact with the AI:</p>
+
+    <form id="aiForm" class="form-inline justify-content-center">
+        <div class="form-group mb-2">
+            <input type="text" class="form-control" id="promptInput" placeholder="Enter your prompt" required>
+        </div>
+        <button type="button" class="btn btn-primary mb-2" onclick="generateResponse()">Submit</button>
+    </form>
+
+    <div id="aiResponse" class="mt-4" style="display:none;">
+        <h3>AI Response:</h3>
+        <p id="responseText"></p>
+    </div>
 </div>
+
+<script>
+    async function generateResponse() {
+        const prompt = document.getElementById('promptInput').value;
+
+        if (!prompt) {
+            alert('Please enter a prompt.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/ai/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(prompt)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('responseText').innerText = data.response;
+                document.getElementById('aiResponse').style.display = 'block';
+            } else {
+                alert('Error generating AI response.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error connecting to the AI API.');
+        }
+    }
+</script>
